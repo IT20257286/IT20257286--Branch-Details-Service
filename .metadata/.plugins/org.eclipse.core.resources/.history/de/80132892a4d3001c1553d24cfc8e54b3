@@ -1,0 +1,183 @@
+$(document).ready(function() 
+{ 
+if ($("#alertSuccess").text().trim() == ""){ 
+ $("#alertSuccess").hide(); 
+ } 
+ $("#alertError").hide(); 
+}); 
+
+
+// SAVE ============================================
+ $(document).on("click", "#btnSave", function(event) 
+{ 
+// Clear alerts---------------------
+ $("#alertSuccess").text(""); 
+ $("#alertSuccess").hide(); 
+ $("#alertError").text(""); 
+ $("#alertError").hide(); 
+ 
+ 
+// Form validation-------------------
+var status = validateBranchForm(); 
+if (status != true) 
+ { 
+ $("#alertError").text(status); 
+ $("#alertError").show(); 
+ return; 
+ } 
+ 
+// If valid------------------------
+var type = ($("#hiddbrIDSave").val() == "") ? "POST" : "PUT"; 
+ $.ajax( 
+ { 
+ url : "BranchesAPI", 
+ type : type, 
+ data : $("#formbr").serialize(), 
+ dataType : "text", 
+ complete : function(response, status) 
+ { 
+ onBranchDetailsSaveComplete(response.responseText, status); 
+ } 
+ }); 
+});
+
+function onBranchDetailsSaveComplete(response, status) 
+{ 
+if (status == "success") 
+ { 
+ var resultSet = JSON.parse(response); 
+ if (resultSet.status.trim() == "success") 
+ { 
+ $("#alertSuccess").text("Successfully saved."); 
+ $("#alertSuccess").show(); 
+ $("#divBranchGrid").html(resultSet.data); 
+ } else if (resultSet.status.trim() == "error") 
+ { 
+ $("#alertError").text(resultSet.data); 
+ $("#alertError").show(); 
+ } 
+ } else if (status == "error") 
+ { 
+ $("#alertError").text("Error while saving."); 
+ $("#alertError").show(); 
+ } else
+ { 
+ $("#alertError").text("Unknown error while saving.."); 
+ $("#alertError").show(); 
+ } 
+
+ $("#hiddbrIDSave").val(""); 
+ $("#formbr")[0].reset(); 
+}
+
+// UPDATE==========================================
+$(document).on("click", ".btnUpdate", function(event) 
+{ 
+ $("#hiddbrIDSave").val($(this).data("branchID")); 
+ $("#branchName").val($(this).closest("tr").find('td:eq(0)').text()); 
+ $("#branchAdd").val($(this).closest("tr").find('td:eq(1)').text()); 
+ $("#branchCon").val($(this).closest("tr").find('td:eq(2)').text()); 
+ $("#branchEmail").val($(this).closest("tr").find('td:eq(3)').text()); 
+}); 
+
+
+$(document).on("click", ".btnRemove", function(event) 
+{ 
+ $.ajax( 
+ { 
+ url : "ODPaymentAPI", 
+ type : "DELETE", 
+ data : "ODPaymentID=" + $(this).data("odpaymentid"),
+ dataType : "text", 
+ complete : function(response, status) 
+ { 
+ onODPaymentsDeleteComplete(response.responseText, status); 
+ } 
+ }); 
+});
+
+
+function onODPaymentsDeleteComplete(response, status) 
+{ 
+if (status == "success") 
+ { 
+ var resultSet = JSON.parse(response); 
+ if (resultSet.status.trim() == "success") 
+ { 
+ $("#alertSuccess").text("Successfully deleted."); 
+ $("#alertSuccess").show(); 
+ $("#divOdpsGrid").html(resultSet.data); 
+ } else if (resultSet.status.trim() == "error") 
+ { 
+ $("#alertError").text(resultSet.data); 
+ $("#alertError").show(); 
+ } 
+ } else if (status == "error") 
+ { 
+ $("#alertError").text("Error while deleting."); 
+ $("#alertError").show(); 
+ } else
+ { 
+ $("#alertError").text("Unknown error while deleting.."); 
+ $("#alertError").show(); 
+ } 
+}
+
+
+
+
+// CLIENT-MODEL================================================================
+function validateODPaymentsForm() 
+{ 
+	
+// OverDue Payment Code
+if ($("#ODCode").val().trim() == ""){ 
+ return "Insert Overdue Payment Code."; 
+ } 
+ 
+
+// OverDue Amount
+if ($("#dueAmount").val().trim() == ""){ 
+ return "Insert Due Amount."; 
+ } 
+ 
+// is numerical value
+var tmpdueAmount = $("#dueAmount").val().trim(); 
+if (!$.isNumeric(tmpdueAmount)) 
+ { 
+ return "Insert a numerical value for Due Amount."; 
+ } 
+// convert to decimal price
+ $("#dueAmount").val(parseFloat(tmpdueAmount).toFixed(2)); 
+ 
+ 
+ //No of DueMonths
+if ($("#dueMonthsNo").val().trim() == "") 
+ { 
+ return "Insert No of Due Months."; 
+ } 
+ 
+// is numerical value
+var tmpdueMonthsNo = $("#dueMonthsNo").val().trim(); 
+if (!$.isNumeric(tmpdueMonthsNo)) 
+ { 
+ return "Insert a numerical value for No of DueMonths."; 
+ } 
+ 
+ 
+ // Due Months
+if ($("#dueMonths").val().trim() == "") 
+ { 
+ return "Insert Due Months."; 
+ } 
+ 
+// Account Number
+if ($("#accountNo").val().trim() == "") 
+ { 
+ return "Insert Item Account Number."; 
+ } 
+ 
+
+ 
+return true; 
+}

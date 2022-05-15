@@ -5,3 +5,9 @@
 1652262420773	Rename resource 'branchservice.jsp'
 1652262434001	Delete element
 1652262594440	Delete element
+1652265797990	Rename resource 'branch.jsp'
+1652265813475	Rename resource 'branch.js'
+1652497811729	Rename type 'BranchAPI'
+1652497822911	Delete element
+1652543096602	Move 'branches.jsp' to 'webapp'
+1652544529397	Delete element
